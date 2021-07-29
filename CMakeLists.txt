@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(switching_by_odom)
+project(switching_by_etc)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -150,11 +150,6 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-add_executable(timertest src/timertest.cpp)
-target_link_libraries(
-    timertest
-    ${catkin_LIBRARIES}
-)
 
 add_executable(swiching_by_time src/swiching_by_time.cpp)
 target_link_libraries(
