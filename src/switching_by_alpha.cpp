@@ -8,7 +8,7 @@
 
 double wait_t;
 double cov_diff;
-bool ch_flag=true;
+
 using std::copy;
 std_srvs::Trigger::Request req;             
 std_srvs::Trigger::Response resp;         
@@ -27,27 +27,22 @@ ros::Subscriber alpha_sub;
 
 void mode(float alpha_threshold)
     {
-        if (alpha_threshold >= 0.1 && ch_flag)
+        if (alpha_threshold <= 0.3)
         {
             req_ler_str.data=true;
             bool  start_learning = StartClient.call(req_ler_str,resp_ler);
             ROS_INFO("learning_mode!");
-            ch_flag=false;
+      
         }
 
-        else if (alpha_threshold >= 0.6 && ch_flag == false)
+        else
         {
             req_ler_end.data=false;
             bool start_learning = StartClient.call(req_ler_end,resp_ler);
             bool  start_waypointnav = Start_Wp_Client.call(req,resp);
             ROS_INFO("waypoint_mode!");
-            ch_flag=true;
         }
 
-        else
-        {
-            ROS_INFO("No change mode!!");
-        }
     }
         
 
