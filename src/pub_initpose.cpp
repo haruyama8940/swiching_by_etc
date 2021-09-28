@@ -5,8 +5,8 @@
 #include <ros/ros.h>                        // ROSヘッダファイル
 #include <std_srvs/SetBool.h>                // サービスヘッダファイル
 #include <std_srvs/Trigger.h>                // サービスヘッダファイル
-#include <nav_msgs/Odometry.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <std_msgs/Bool.h>
+//#include <nav_msgs/Odometry.h>
 #include <std_msgs/Float32.h>
 #include <gazebo_msgs/LinkStates.h>
 #include <gazebo_msgs/ModelStates.h>
@@ -67,7 +67,7 @@ void gazebo_pose_set(std::string model_name,
     }
 }
 
-void CallBack(const std_msgs::Float32& msg)
+void CallBack(const std_msgs::Bool& msg)
  {
   geometry_msgs::Pose model_pose;
     model_pose.position.x = 0;
@@ -99,10 +99,10 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(10);
   //define 2d estimate pose
   initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 10);//initial_pose publish
-    Start_Wp_Client = nh.serviceClient<std_srvs::Trigger>("start_wp_nav");  //create start waypoint service  Client for waypoint nav
+  Start_Wp_Client = nh.serviceClient<std_srvs::Trigger>("start_wp_nav");  //create start waypoint service  Client for waypoint nav
     //StartClient = nh.serviceClient<std_srvs::SetBool>("learn_out");  //create start learning service  Client for learning
-    ROS_INFO("ready!");
-    reset_sub = nh.subscribe("reset_pose", 10, &CallBack);//subscribe topic "swiching" from waypoint_nav
-
+  ROS_INFO("ready!");
+  reset_sub = nh.subscribe("reset_pose", 1, &CallBack);//subscribe topic "swiching" from waypoint_nav
+  ros::spin();
   return 0;
 }

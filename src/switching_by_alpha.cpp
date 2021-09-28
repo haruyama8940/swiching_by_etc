@@ -48,7 +48,7 @@ void mode(float alpha_threshold)
 
 void Alpha_Callback(std_msgs::Float32 alpha_msg)
     {
-    ROS_INFO("%f",&alpha_msg.data);
+    //ROS_INFO("%f",&alpha_msg.data);
     mode(alpha_msg.data);
     }
 
