@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   std_msgs
   geometry_msgs
+  gazebo_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -153,6 +154,12 @@ include_directories(
 add_executable(timertest src/timertest.cpp)
 target_link_libraries(
     timertest
+    ${catkin_LIBRARIES}
+)
+
+add_executable(pub_initpose src/pub_initpose.cpp)
+target_link_libraries(
+    pub_initpose
     ${catkin_LIBRARIES}
 )
 
