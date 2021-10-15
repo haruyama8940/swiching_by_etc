@@ -44,7 +44,7 @@ void initial_pose_set(float pose_x,float pose_y,float ori_z,float ori_w)//initia
     initial_pose_pub.publish(pose_msg);
     }
     
-void gazebo_pose_set(std::string model_name, std::string reference_frame, geometry_msgs::Pose pose, geometry_msgs::Twist model_twist)
+void gazebo_pose_set(std::string model_name, geometry_msgs::Pose pose, geometry_msgs::Twist model_twist)
 
   {
   gazebo_msgs::SetModelState setmodelstate;
@@ -52,14 +52,14 @@ void gazebo_pose_set(std::string model_name, std::string reference_frame, geomet
     // Model state msg
     gazebo_msgs::ModelState modelstate;
     modelstate.model_name = model_name;
-    modelstate.reference_frame = reference_frame;
+    //modelstate.reference_frame = reference_frame;
     modelstate.pose = pose;
     modelstate.twist = model_twist;
     gazebo_pose_pub.publish(modelstate);
 
   }
 
-void CallBack(const std_msgs::Int8 & msg)
+void CallBack(const std_msgs::Bool & msg)
  {
   geometry_msgs::Pose model_pose;
     model_pose.position.x = 0;
@@ -78,8 +78,8 @@ void CallBack(const std_msgs::Int8 & msg)
     model_twist.angular.y = 0.0;
     model_twist.angular.z = 0.0;
 
-  initial_pose_set(-63.35,-105.17,0.96,0.279);
-  gazebo_pose_set("mobile_base", "world", model_pose, model_twist);
+  initial_pose_set(0,0,0,0.99);
+  gazebo_pose_set("mobile_base", model_pose, model_twist);
 
  }
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
   Start_Wp_Client = nh.serviceClient<std_srvs::Trigger>("start_wp_nav");  //create start waypoint service  Client for waypoint nav
     //StartClient = nh.serviceClient<std_srvs::SetBool>("learn_out");  //create start learning service  Client for learning
     ROS_INFO("ready!");
-  reset_sub = nh.subscribe("reset_pose", 10, &CallBack);//subscribe topic "swiching" from waypoint_nav
+  // reset_sub = nh.subscribe("reset_pose", 10, &CallBack);//subscribe topic "swiching" from waypoint_nav
 
   Start_Wp_Client = nh.serviceClient<std_srvs::Trigger>("start_wp_nav");  //create start waypoint service  Client for waypoint nav
     //StartClient = nh.serviceClient<std_srvs::SetBool>("learn_out");  //create start learning service  Client for learning
