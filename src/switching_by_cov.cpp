@@ -32,21 +32,22 @@ boost::array<double , 36> current_pose;
 
 void mode(double cov)
     {
-        if (cov>=0.4 && ch_whi_flag==false)
+        if (cov>=10 && ch_whi_flag==false)
         {
-            req_ler_str.data=true;
+            // req_ler_str.data=true;
             ch_ler_flag=true;
             flag.data=true;
-             ROS_INFO("learning_mode!");
+            ROS_INFO("learning_mode!");
+
         }
         
         else
         {
-            req_ler_end.data=false;
+            // req_ler_end.data=false;
             // bool start_learning = StartClient.call(req_ler_end,resp_ler); 
             //initial_pose_pub.publish(pose_msg);
             // bool  start_waypointnav = Start_Wp_Client.call(req,resp); 
-            flag.data=true;
+            flag.data=false;
             ROS_INFO("waypoint_mode!");
         }
         start_lea_pub.publish(flag);
@@ -72,21 +73,23 @@ void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
         //         cov_diff = current_pose[i] - old_pose[i];
         //     }
         pose_x_cov=pose_msg.pose.covariance[0];
-        pose_y_cov=pose_msg.pose.covariance[6];
+        pose_y_cov=pose_msg.pose.covariance[7];
         pose_xy_cov=pose_x_cov + pose_y_cov;
         // ROS_INFO("%f", &current_pose);
         mode(pose_xy_cov);
-        old_pose = current_pose;
+        // old_pose = current_pose;
      
     }
 
 void White_Callback(const std_msgs::Bool &d)
     {
-    if (d.data==true)
+    if (d.data==true){
        ch_whi_flag=false;
-        bool  start_learning = StartClient.call(req_ler_str,resp_ler);
-        ROS_INFO("waypoint_mode!");
+        // bool  start_learning = StartClient.call(req_ler_str,resp_ler);
+        //bool  start_waypointnav = Start_Wp_Clienall(req,resp);
 
+        ROS_INFO("waypoint_mode!");
+    }
     else
         ROS_INFO("white_mode");
     }
