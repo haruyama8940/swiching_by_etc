@@ -5,6 +5,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int8.h>
 
 double wait_t;
 double cov_diff;
@@ -23,6 +24,7 @@ ros::ServiceClient StartClient;
 ros::ServiceServer srv;
 ros::Publisher initial_pose_pub;
 ros::Publisher start_lea_pub;
+ros::Publisher start_white_pub;
 ros::Subscriber start_white_sub; 
 ros::Subscriber swiching_sub;
 ros::Subscriber white_suc_sub;
@@ -81,9 +83,9 @@ void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
      
     }
 
-void White_Callback(const std_msgs::Bool &d)
+void White_Callback(const std_msgs::Bool &suc)
     {
-    if (d.data==true){
+    if (suc.data==true){
        ch_whi_flag=false;
         // bool  start_learning = StartClient.call(req_ler_str,resp_ler);
         //bool  start_waypointnav = Start_Wp_Clienall(req,resp);
@@ -96,10 +98,12 @@ void White_Callback(const std_msgs::Bool &d)
 
 void Start_White_Callback(const std_msgs::Bool &d)
     {
-    if (d.data==true)
+    if (d.data==true){
        ch_whi_flag=true;
+       ROS_INFO("white_mode");
+       }
     else
-        ROS_INFO("white_mode");
+        ROS_INFO("way_mode");
     }
 
 int main(int argc, char **argv) {
@@ -109,10 +113,10 @@ int main(int argc, char **argv) {
     StartClient = nh.serviceClient<std_srvs::SetBool>("learn_out"); 
     ROS_INFO("ready!");
     start_lea_pub = nh.advertise<std_msgs::Bool>("start_learn", 10);//initial_pose publish
-    // start_whi_pub = nh.advertise<std_msgs::Bool>("start_white", 10);//initial_pose publish
+    start_white_pub = nh.advertise<std_msgs::Bool>("start_white", 10);//initial_pose publish
     pose_sub = nh.subscribe("amcl_pose", 10, &Pose_Callback);
     white_suc_sub=nh.subscribe("white_success", 10, &White_Callback);
-    start_white_sub=nh.subscribe("start_white", 10, &Start_White_Callback);
+    start_white_sub=nh.subscribe("white_line", 10, &Start_White_Callback);
 
     ros::spin();
     return 0;
