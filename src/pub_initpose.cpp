@@ -26,7 +26,7 @@ ros::ServiceClient StartClient;
 ros::ServiceClient set_model_state_client;
 ros::ServiceServer srv;
 ros::Publisher initial_pose_pub; 
-ros::Subscriber reset_sub;
+ros::Subscriber reset_sub,pose_sub;
 ros::Publisher gazebo_pose_pub;
 
 void initial_pose_set(float pose_x,float pose_y,float ori_z,float ori_w)//initial_pose set function
@@ -58,8 +58,7 @@ void gazebo_pose_set(std::string model_name, geometry_msgs::Pose pose, geometry_
     gazebo_pose_pub.publish(modelstate);
 
   }
-
-void CallBack(const std_msgs::Bool & msg)
+void set()
  {
   geometry_msgs::Pose model_pose;
     model_pose.position.x = 0;
@@ -80,27 +79,50 @@ void CallBack(const std_msgs::Bool & msg)
 
   initial_pose_set(0,0,0,0.99);
   gazebo_pose_set("mobile_base", model_pose, model_twist);
-
+  ROS_INFO("reset!");
  }
+
+void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
+    {
+        double pose_x=0;
+        double pose_y=0;
+
+        // if(ch_flag)
+        // {
+        //     old_pose =  p.pose.covariance;
+        //     ch_flag=false;
+        // }
+        // else
+        // {
+        //     current_pose = p.pose.covariance;
+        //     for (int i=0; i!=current_pose.size(); i++)
+        //     {
+        //         cov_diff = current_pose[i] - old_pose[i];
+        //     }
+        pose_x=p.pose.pose.position.x;
+        pose_y=p.pose.pose.position.y;
+        if (pose_x>8.0&&pose_y>2.0)
+        {
+          set();
+        }
+        
+        // ROS_INFO("%f", &current_pose);
+        
+        // old_pose = current_pose;
+     
+    }
+
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "pub_initpose");
   ros::NodeHandle nh;
-  //ros::Publisher initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 10);
   ros::Rate loop_rate(10);
-  //define 2d estimate pose
   initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 10);//initial_pose publish
   gazebo_pose_pub = nh.advertise<gazebo_msgs::ModelState>("/gazebo/set_model_state", 10);//gazebo_pub
-  Start_Wp_Client = nh.serviceClient<std_srvs::Trigger>("start_wp_nav");  //create start waypoint service  Client for waypoint nav
-    //StartClient = nh.serviceClient<std_srvs::SetBool>("learn_out");  //create start learning service  Client for learning
-    ROS_INFO("ready!");
-  // reset_sub = nh.subscribe("reset_pose", 10, &CallBack);//subscribe topic "swiching" from waypoint_nav
-
-  Start_Wp_Client = nh.serviceClient<std_srvs::Trigger>("start_wp_nav");  //create start waypoint service  Client for waypoint nav
-    //StartClient = nh.serviceClient<std_srvs::SetBool>("learn_out");  //create start learning service  Client for learning
   ROS_INFO("ready!");
-  reset_sub = nh.subscribe("reset_pose", 1, &CallBack);//subscribe topic "swiching" from waypoint_nav
+  //reset_sub = nh.subscribe("reset_pose", 10, &CallBack);
+  pose_sub = nh.subscribe("amcl_pose", 10, &Pose_Callback);
   ros::spin();
   return 0;
 }
