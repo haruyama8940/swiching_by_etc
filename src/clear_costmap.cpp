@@ -40,14 +40,12 @@ void Cmd_vel_Callback(const geometry_msgs::Twist& cmd_vel_msg){
   }
   mode(100);
 }
-/* サーバー */
 int main(int argc, char **argv) {
     ros::init(argc, argv, "clear_costmap");
-    ros::NodeHandle nh;                    
+    ros::NodeHandle nh;
+    ROS_INFO("ready!"); 
+    cmd_vel_sub = nh.subscribe("/nav_vel", 10, &Cmd_vel_Callback);//subscribe topic "swiching" from waypoint_nav
     clear_costmaps_srv_ = nh.serviceClient<std_srvs::Empty>("/move_base/clear_costmaps");
-    ROS_INFO("ready!");
-    //swiching_sub = nh.subscribe("swiching", 10, &CallBack);//subscribe topic "swiching" from waypoint_nav
-    
     ros::spin();                           
   return 0;
 }   
