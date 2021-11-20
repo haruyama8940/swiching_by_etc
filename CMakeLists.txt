@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   gazebo_msgs
+  waypoint_manager_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -163,6 +164,11 @@ target_link_libraries(
     ${catkin_LIBRARIES}
 )
 
+add_executable(switch src/switch.cpp)
+target_link_libraries(
+    switch
+    ${catkin_LIBRARIES}
+)
 add_executable(switching_by_time src/switching_by_time.cpp)
 target_link_libraries(
     switching_by_time
@@ -177,6 +183,10 @@ add_executable(switching_by_alpha src/switching_by_alpha.cpp)
 target_link_libraries(
     switching_by_alpha
     ${catkin_LIBRARIES}
+)
+add_dependencies(switch ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+    target_link_libraries(switch 
+    ${catkin_LIBRARISE}
 )
 #############
 ## Install ##
