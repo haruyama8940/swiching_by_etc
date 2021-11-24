@@ -2,6 +2,7 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "math.h"
+#include <cmath>
 #include <ros/ros.h>                        // ROSヘッダファイル
 #include <std_srvs/SetBool.h>                // サービスヘッダファイル
 #include <std_srvs/Trigger.h>                // サービスヘッダファイル
@@ -12,9 +13,16 @@
 #include <gazebo_msgs/LinkStates.h>
 #include <gazebo_msgs/ModelStates.h>
 #include <gazebo_msgs/SetModelState.h>
+#include <vector>
 #define PI 3.1415926
 
+
 double wait_t;
+double pose_x=0;
+double pose_y=0;
+
+std::vector<double> pose_list_x={10,8.0,7.9},
+                    pose_list_y={-0.03,3.4,-3.4};
 std_srvs::Trigger::Request req;             
 std_srvs::Trigger::Response resp;           
 std_srvs::SetBool::Request req_ler_str;             
@@ -84,9 +92,7 @@ void set()
 
 void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
     {
-        double pose_x=0;
-        double pose_y=0;
-
+        
         // if(ch_flag)
         // {
         //     old_pose =  p.pose.covariance;
@@ -101,10 +107,19 @@ void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
         //     }
         pose_x=p.pose.pose.position.x;
         pose_y=p.pose.pose.position.y;
-        if (pose_x>8.0&&pose_y>2.0)
-        {
+        // for (int i = 0; i <3; i++)
+        // {
+        //   if(std::fabs(pose_x-pose_list_x[i])<=0.3&&std::fabs(pose_y-pose_list_y[i]<=0.3))
+        //     set();
+        // }
+        if (std::fabs(pose_x-10.0)<=0.3&&std::fabs(pose_y-0.03)<=0.3||std::fabs(pose_x-8.0)<=0.3&&std::fabs(pose_y-3.4)<=0.3||std::fabs(pose_x-7.9)<=0.3&&std::fabs(pose_y-(-3.4))<=0.3)
+          {
           set();
-        }
+          } 
+        // if (pose_x-10.0+pose_y-0.03==0.3||pose_x-8.0&&pose_y==3.4||pose_x==7.9&&pose_y==-3.4)
+        // {
+        //   set();
+        // }
         
         // ROS_INFO("%f", &current_pose);
         
