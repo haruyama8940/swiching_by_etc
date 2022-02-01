@@ -16,7 +16,7 @@
 #include <vector>
 #define PI 3.1415926
 
-
+int count=0;
 double wait_t;
 double pose_x=0;
 double pose_y=0;
@@ -29,7 +29,7 @@ std_srvs::SetBool::Request req_ler_str;
 std_srvs::SetBool::Request req_ler_end;             
 std_srvs::SetBool::Response resp_ler;           
 geometry_msgs::PoseWithCovarianceStamped pose_msg;
-ros::ServiceClient Start_Wp_Client; 
+ros::ServiceClient Send_Wp_Client; 
 ros::ServiceClient StartClient;
 ros::ServiceClient set_model_state_client;
 ros::ServiceServer srv;
@@ -87,7 +87,9 @@ void set()
 
   initial_pose_set(0,0,0,0.99);
   gazebo_pose_set("mobile_base", model_pose, model_twist);
-  ROS_INFO("reset!");
+  count++;
+
+  ROS_INFO("reset!:%d",count);
  }
 
 void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
@@ -112,9 +114,13 @@ void Pose_Callback(const geometry_msgs::PoseWithCovarianceStamped &p)
         //   if(std::fabs(pose_x-pose_list_x[i])<=0.3&&std::fabs(pose_y-pose_list_y[i]<=0.3))
         //     set();
         // }
-        if (std::fabs(pose_x-10.0)<=0.3&&std::fabs(pose_y-0.03)<=0.3||std::fabs(pose_x-8.0)<=0.3&&std::fabs(pose_y-3.4)<=0.3||std::fabs(pose_x-7.9)<=0.3&&std::fabs(pose_y-(-3.4))<=0.3)
+        if (std::fabs(pose_x-9.64)<=0.3&&std::fabs(pose_y-(-0.14))<=0.3||std::fabs(pose_x-8.03)<=0.3&&std::fabs(pose_y-1.59)<=0.3||std::fabs(pose_x-7.91)<=0.3&&std::fabs(pose_y-(-1.81))<=0.3)
+        //if (std::fabs(pose_x-8.0)<=0.3&&std::fabs(pose_y-3.4)<=0.3)
+        //if (std::fabs(pose_x-7.9)<=0.3&&std::fabs(pose_y-(-3.4))<=0.3)
+        
           {
           set();
+          Send_Wp_Client.call(req,resp);
           } 
         // if (pose_x-10.0+pose_y-0.03==0.3||pose_x-8.0&&pose_y==3.4||pose_x==7.9&&pose_y==-3.4)
         // {
@@ -135,6 +141,7 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(10);
   initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 10);//initial_pose publish
   gazebo_pose_pub = nh.advertise<gazebo_msgs::ModelState>("/gazebo/set_model_state", 10);//gazebo_pub
+  Send_Wp_Client = nh.serviceClient<std_srvs::Trigger>("send_wp_nav");
   ROS_INFO("ready!");
   //reset_sub = nh.subscribe("reset_pose", 10, &CallBack);
   pose_sub = nh.subscribe("amcl_pose", 10, &Pose_Callback);
